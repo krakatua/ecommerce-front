@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import Center from "./Center";
 import Button from "./Button";
-import CartLogo from "@/constant";
 import {BsFillCartFill, BsFillPlusCircleFill} from 'react-icons/bs'
 import ButtonLink from "./ButtonLink";
+import { useContext } from "react";
+import { CartContext } from "./CartContext";
 
 const Bg = styled.div`
   background-color: #222;
@@ -44,7 +45,12 @@ const ButtonsWrapper = styled.div`
 `;
 
 function Featured({product}) {
-  console.log(product)
+
+  const {addProduct} = useContext(CartContext)
+  function addFeaturedToCart() {
+    addProduct(prev => [...prev, product._id]);
+  }
+
   return (
     <Bg>
       <Center>
@@ -60,9 +66,9 @@ function Featured({product}) {
                 outline={1} white={1}>
                 <BsFillPlusCircleFill/> Read More 
                 </ButtonLink>
-                <ButtonLink href={``} primary={1}>
+                <Button white onClick={addFeaturedToCart}>
                 <BsFillCartFill/> Add to Cart 
-                </ButtonLink>
+                </Button>
 
 
               

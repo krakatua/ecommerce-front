@@ -5,10 +5,6 @@ import { mongooseConnect } from "@/lib/mongoose";
 import { Product } from "@/modals/Product";
 
 export default function HomePage({featuredProduct, newProducts}) {
-  
-  console.log(featuredProduct)
-  console.log(newProducts)
-
 
   return (
     <div>
