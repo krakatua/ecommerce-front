@@ -52,7 +52,8 @@ const CityHolder = styled.div`
 `;
 
 export default function CartPage() {
-  const { cartProducts, addProduct, removeProduct } = useContext(CartContext);
+  const { cartProducts, addProduct, removeProduct, clearCart } =
+    useContext(CartContext);
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,6 +61,7 @@ export default function CartPage() {
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false)
 
   useEffect(() => {
     if (cartProducts.length > 0) {
@@ -75,6 +77,16 @@ export default function CartPage() {
     }
   }, [cartProducts]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (window.location.href.includes("success")) {
+      setIsSuccess(true)
+      clearCart();
+    }
+  }, []);
+
   function moreOfThisProduct(id) {
     addProduct(id);
   }
@@ -85,39 +97,42 @@ export default function CartPage() {
 
   async function goToPayment() {
     const response = await axios.post(`/api/checkout`, {
-        name, email, city, postalCode, streetAddress, country, cartProducts,
+      name,
+      email,
+      city,
+      postalCode,
+      streetAddress,
+      country,
+      cartProducts,
     });
     if (response.data.url) {
-        window.location = response.data.url;
+      window.location = response.data.url;
     }
   }
 
   let total = 0;
-
-  
 
   for (const productId of cartProducts) {
     const price = products.find((p) => p._id === productId)?.price || 0;
     total += price;
   }
 
-  if (window.location.href.includes('success')) {
+  if (isSuccess) {
     return (
-        <>
-        <Header/>
+      <>
+        <Header />
         <Center>
           <ColumnsWrapper>
             <Box>
-                <h1>Thanks for your order!</h1>
-                <p>
-                  We will send you a email when your order will be sent.
-                </p>
+              <h1>Thanks for your order!</h1>
+              <p>We will send you a email when your order will be sent.</p>
             </Box>
           </ColumnsWrapper>
         </Center>
-        </>
-    )
+      </>
+    );
   }
+
 
   return (
     <>
@@ -180,54 +195,54 @@ export default function CartPage() {
           {!!cartProducts?.length && (
             <Box>
               <h2>Order Information</h2>
-              
+
+              <Input
+                type="text"
+                placeholder="Name"
+                value={name}
+                name="name"
+                onChange={(ev) => setName(ev.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Email"
+                value={email}
+                name="email"
+                onChange={(ev) => setEmail(ev.target.value)}
+              />
+              <CityHolder>
                 <Input
                   type="text"
-                  placeholder="Name"
-                  value={name}
-                  name="name"
-                  onChange={(ev) => setName(ev.target.value)}
+                  placeholder="City"
+                  value={city}
+                  name="city"
+                  onChange={(ev) => setCity(ev.target.value)}
                 />
                 <Input
                   type="text"
-                  placeholder="Email"
-                  value={email}
-                  name="email"
-                  onChange={(ev) => setEmail(ev.target.value)}
+                  placeholder="Postal Code"
+                  value={postalCode}
+                  name="postalCode"
+                  onChange={(ev) => setPostalCode(ev.target.value)}
                 />
-                <CityHolder>
-                  <Input
-                    type="text"
-                    placeholder="City"
-                    value={city}
-                    name="city"
-                    onChange={(ev) => setCity(ev.target.value)}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Postal Code"
-                    value={postalCode}
-                    name="postalCode"
-                    onChange={(ev) => setPostalCode(ev.target.value)}
-                  />
-                </CityHolder>
-                <Input
-                  type="text"
-                  placeholder="Street Address"
-                  value={streetAddress}
-                  name="streetAddress"
-                  onChange={(ev) => setStreetAddress(ev.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Country"
-                  value={country}
-                  name="country"
-                  onChange={(ev) => setCountry(ev.target.value)}
-                />
-                <Button black block onClick={goToPayment}>
-                  Checkout
-                </Button>
+              </CityHolder>
+              <Input
+                type="text"
+                placeholder="Street Address"
+                value={streetAddress}
+                name="streetAddress"
+                onChange={(ev) => setStreetAddress(ev.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Country"
+                value={country}
+                name="country"
+                onChange={(ev) => setCountry(ev.target.value)}
+              />
+              <Button black block onClick={goToPayment}>
+                Checkout
+              </Button>
             </Box>
           )}
         </ColumnsWrapper>
