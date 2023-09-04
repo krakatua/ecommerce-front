@@ -65,7 +65,6 @@ export default function ProductBox({ _id, title, description, price, images }) {
         <PriceRow>
           <Price>${price}</Price>
           <Button primary outline onClick={() => addProduct(_id)}>
-            {" "}
             <BsFillCartFill />
           </Button>
         </PriceRow>

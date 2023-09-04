@@ -43,6 +43,15 @@ export const ButtonStyle = css`
     border: 1px solid ${primary};
     color:#fff;
   `}
+  ${props => props.cart && props.outline && css`
+    svg {
+      margin-right: 0;
+    }
+  `}
+  //cartBtn
+  ${props => props.cartBtn && css`
+    width: 40px;
+  `}
 
   
   ${props => props.primary && props.outline && css`
