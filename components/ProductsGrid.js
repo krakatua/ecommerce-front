@@ -12,7 +12,6 @@ const StyledProductsGrid = styled.div`
 `;
 
 export default function ProductsGrid({products}) {
-    console.log(products)
   return (
     <StyledProductsGrid>
         {products?.map((product) => (

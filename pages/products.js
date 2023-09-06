@@ -3,17 +3,18 @@ import Header from "@/components/Header";
 import ProductsGrid from "@/components/ProductsGrid";
 import Title from "@/components/Title";
 import { mongooseConnect } from "@/lib/mongoose";
+import { Category } from "@/modals/Category";
 import { Product } from "@/modals/Product";
 
 
-export default function ProductsPage({ products }) {
-  console.log(products);
+export default function ProductsPage({ products, categories }) {
   return (
     <>
       <Header />
       <Center>
         <Title>All Products</Title>
         <ProductsGrid products={products} />
+        
       </Center>
     </>
   );
@@ -22,9 +23,11 @@ export default function ProductsPage({ products }) {
 export async function getServerSideProps() {
   await mongooseConnect();
   const products = await Product.find({}, null, { sort: { _id: -1 } });
+  const categories = await Category.find()
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
+      categories: JSON.parse(JSON.stringify(categories))
     },
   };
 }
