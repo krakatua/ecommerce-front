@@ -46,9 +46,6 @@ export default function CategoryPage({ category, products }) {
     const [filterVal, setFilterVal] = useState(
         category.properties.map(p => ({name: p.name, value: 'all'}))
     );
-
-    
-
   return (
     <>
       <Header />
