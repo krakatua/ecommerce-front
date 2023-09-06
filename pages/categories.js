@@ -78,7 +78,7 @@ export default function CategoriesPage({ mainCategories, categoriesProducts }) {
               </CategoryTitle>
             <CategoryGrid>
               {categoriesProducts[cat._id].map(p => (
-                <ProductBox {...p}/>
+                <ProductBox key={p} {...p}/>
               ))}
               <ShowAllSquare href={'/category/' + cat._id}>
               Show All &rarr;
