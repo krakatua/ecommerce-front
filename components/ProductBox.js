@@ -21,15 +21,6 @@ const WhiteBox = styled(Link)`
     max-width: 100%;
     max-height: 80px;
   }
-
-  
-`;
-
-const WhiteBoxImg = styled.div`
-  transition: all 300ms ease;
-  &:hover {
-    transform: scale(1.05);
-  }
 `;
 
 const Title = styled(Link)`
@@ -64,9 +55,9 @@ export default function ProductBox({ _id, title, description, price, images }) {
   return (
     <ProductWrapper>
       <WhiteBox href={url}>
-        <WhiteBoxImg>
+        <div>
           <img src={images?.[0]} />
-        </WhiteBoxImg>
+        </div>
       </WhiteBox>
       <ProductInfoBox>
         <Title href={url}>{title}</Title>
