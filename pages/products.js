@@ -14,7 +14,6 @@ export default function ProductsPage({ products, categories }) {
       <Center>
         <Title>All Products</Title>
         <ProductsGrid products={products} />
-        
       </Center>
     </>
   );
