@@ -8,14 +8,13 @@ import { Product } from "@/modals/Product";
 
 
 export default function ProductsPage({ products, categories }) {
-  console.log(categories);
   return (
     <>
       <Header />
       <Center>
         <Title>All Products</Title>
         <ProductsGrid products={products} />
-        {categories.map(cate => <h1 key={cate}>{cate.name}</h1>)}
+        
       </Center>
     </>
   );
