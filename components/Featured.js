@@ -56,6 +56,7 @@ const ColumnsWrapper = styled.div`
 const Column = styled.div`
   display: flex;
   align-items: center;
+
 `;
 
 const ButtonsWrapper = styled.div`

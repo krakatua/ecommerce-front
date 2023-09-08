@@ -4,7 +4,8 @@ import ProductsGrid from "@/components/ProductsGrid";
 import { mongooseConnect } from "@/lib/mongoose";
 import { Category } from "@/modals/Category";
 import { Product } from "@/modals/Product";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const CateHeader = styled.div`
@@ -41,11 +42,41 @@ const Filter = styled.div`
   }
 `;
 
-export default function CategoryPage({ category, products }) {
+export default function CategoryPage({
+  category,
+  subCategories,
+  products: cateProducts,
+}) {
+  const [products, setProducts] = useState(cateProducts);
 
-    const [filterVal, setFilterVal] = useState(
-        category.properties.map(p => ({name: p.name, value: 'all'}))
-    );
+  const [filterVal, setFilterVal] = useState(
+    category.properties.map((p) => ({ name: p.name, value: "all" }))
+  );
+
+  function handlerFilterStatus(filterName, filvalue) {
+    setFilterVal((prev) => {
+      return prev.map((p) => ({
+        name: p.name,
+        value: p.name === filterName ? filvalue : p.value,
+      }));
+    });
+  }
+
+  useEffect(() => {
+    const catIds = [category._id, ...(subCategories?.map((c) => c._id) || [])];
+    const params = new URLSearchParams();
+    params.set("categories", catIds.join(","));
+    filterVal.forEach((fil) => {
+      if (fil.value !== "all") {
+        params.set(fil.name, fil.value);
+      }
+    });
+    const url = `/api/products?` + params.toString();
+    axios.get(url).then((res) => {
+      setProducts(res?.data);
+    });
+  }, [filterVal]);
+
   return (
     <>
       <Header />
@@ -56,10 +87,13 @@ export default function CategoryPage({ category, products }) {
             {category.properties.map((prop) => (
               <Filter key={prop}>
                 <span>{prop.name}:</span>
-                <select 
-                onChange={() => {}}
-                value={filterVal.find(f => f.name === prop.name).value}>
-                    <option value="all">All</option>
+                <select
+                  onChange={(ev) => {
+                    handlerFilterStatus(prop.name, ev.target.value);
+                  }}
+                  value={filterVal.find((f) => f.name === prop.name).value}
+                >
+                  <option value="all">All</option>
                   {prop.values.map((val) => (
                     <option value={val} key={val}>
                       {val}
@@ -85,6 +119,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       category: JSON.parse(JSON.stringify(category)),
+      subCategories: JSON.parse(JSON.stringify(subCategories)),
       products: JSON.parse(JSON.stringify(products)),
     },
   };
