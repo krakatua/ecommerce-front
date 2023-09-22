@@ -4,6 +4,7 @@ import Button from "./Button";
 import { BsFillCartFill } from "react-icons/bs";
 import Link from "next/link";
 import { CartContext } from "./CartContext";
+import FlyingBtn from "./FlyingBtn";
 
 const ProductWrapper = styled.div``;
 
@@ -21,8 +22,6 @@ const WhiteBox = styled(Link)`
     max-width: 100%;
     max-height: 80px;
   }
-
-  
 `;
 
 const WhiteBoxImg = styled.div`
@@ -49,18 +48,16 @@ const PriceRow = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-top: 10px;
-
 `;
 
 const Price = styled.div`
-    font-size: 1.5em;
-    font-weight: 600;
+  font-size: 1.5em;
+  font-weight: 600;
 `;
 
 export default function ProductBox({ _id, title, description, price, images }) {
-  
-  const {addProduct} = useContext(CartContext);
-  const url = '/products/'+_id;
+  const { addProduct } = useContext(CartContext);
+  const url = "/products/" + _id;
   return (
     <ProductWrapper>
       <WhiteBox href={url}>
@@ -73,9 +70,14 @@ export default function ProductBox({ _id, title, description, price, images }) {
 
         <PriceRow>
           <Price>${price}</Price>
-          <Button primary outline onClick={() => addProduct(_id)}>
-            <BsFillCartFill />
-          </Button>
+          <FlyingBtn
+            src={images?.[0]}
+            targetTop={"5%"}
+            targetLeft={"95%"}
+            flyingItemStyling={{ width: "4rem" }}
+          >
+            <BsFillCartFill onClick={() => addProduct(_id)} />
+          </FlyingBtn>
         </PriceRow>
       </ProductInfoBox>
     </ProductWrapper>
