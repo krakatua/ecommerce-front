@@ -1,9 +1,11 @@
 import Center from "@/components/Center";
 import Header from "@/components/Header";
 import ProductsGrid from "@/components/ProductsGrid";
+import Spinner from "@/components/Spinner";
 import { mongooseConnect } from "@/lib/mongoose";
 import { Category } from "@/modals/Category";
 import { Product } from "@/modals/Product";
+import { defaults } from "autoprefixer";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -48,10 +50,16 @@ export default function CategoryPage({
   products: cateProducts,
 }) {
   const [products, setProducts] = useState(cateProducts);
+  const defaultFilterVal = category.properties.map((p) => ({
+    name: p.name,
+    value: "all",
+  }));
+  const defaultSorting = "_id-desc";
+  const [filterVal, setFilterVal] = useState(defaultFilterVal);
 
-  const [filterVal, setFilterVal] = useState(
-    category.properties.map((p) => ({ name: p.name, value: "all" }))
-  );
+  const [sort, setSort] = useState(defaultSorting);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [filsterStatus, setFilterStatus] = useState(false);
 
   function handlerFilterStatus(filterName, filvalue) {
     setFilterVal((prev) => {
@@ -60,12 +68,19 @@ export default function CategoryPage({
         value: p.name === filterName ? filvalue : p.value,
       }));
     });
+    setFilterStatus(true);
   }
 
   useEffect(() => {
+    if (!filsterStatus) {
+      return;
+    }
+    setLoadingProducts(true);
     const catIds = [category._id, ...(subCategories?.map((c) => c._id) || [])];
     const params = new URLSearchParams();
     params.set("categories", catIds.join(","));
+    params.set("sort", sort);
+
     filterVal.forEach((fil) => {
       if (fil.value !== "all") {
         params.set(fil.name, fil.value);
@@ -74,8 +89,12 @@ export default function CategoryPage({
     const url = `/api/products?` + params.toString();
     axios.get(url).then((res) => {
       setProducts(res?.data);
+
+      setTimeout(() => {
+        setLoadingProducts(false);
+      }, 1000);
     });
-  }, [filterVal]);
+  }, [filterVal, sort, filsterStatus]);
 
   return (
     <>
@@ -102,9 +121,30 @@ export default function CategoryPage({
                 </select>
               </Filter>
             ))}
+            <Filter>
+              <span>Sort:</span>
+              <select
+                value={sort}
+                onChange={(e) => {
+                  setSort(e.target.value);
+                  setFilterStatus(true);
+                }}
+              >
+                <option value="price-asc">Price Ascending</option>
+                <option value="price-desc">Price Descending</option>
+                <option value="_id-desc">newest First</option>
+                <option value="_id-asc">oldest First</option>
+              </select>
+            </Filter>
           </FilterWrapp>
         </CateHeader>
-        <ProductsGrid products={products} />
+        {loadingProducts && <Spinner fullWidth />}
+        {!loadingProducts && (
+          <div>
+            {products.length > 0 && <ProductsGrid products={products} />}
+            {products.length === 0 && <div>Sorry, No Products</div>}
+          </div>
+        )}
       </Center>
     </>
   );
