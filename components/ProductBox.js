@@ -1,9 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
-import Button from "./Button";
 import { BsFillCartFill } from "react-icons/bs";
 import Link from "next/link";
-import { CartContext } from "./CartContext";
 import FlyingBtn from "./FlyingBtn";
 
 const ProductWrapper = styled.div``;
@@ -56,7 +54,6 @@ const Price = styled.div`
 `;
 
 export default function ProductBox({ _id, title, description, price, images }) {
-  const { addProduct } = useContext(CartContext);
   const url = "/products/" + _id;
   return (
     <ProductWrapper>
@@ -73,10 +70,19 @@ export default function ProductBox({ _id, title, description, price, images }) {
           <FlyingBtn
             src={images?.[0]}
             targetTop={"5%"}
-            targetLeft={"95%"}
-            flyingItemStyling={{ width: "4rem" }}
+            targetLeft={"75%"}
+            flyingItemStyling={{
+              width: "auto",
+              height: "auto",
+              maxWidth: "100px",
+              maxHeight: "100px",
+              borderRadius: "0",
+            }}
+            _id={_id}
+            outline
+            primary
           >
-            <BsFillCartFill onClick={() => addProduct(_id)} />
+            <BsFillCartFill />
           </FlyingBtn>
         </PriceRow>
       </ProductInfoBox>

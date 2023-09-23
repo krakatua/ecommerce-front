@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Input from "@/components/Input";
 import Table from "@/components/Table";
 import axios from "axios";
+import { RevealWrapper } from "next-reveal";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 //stripe checkout
@@ -17,7 +18,6 @@ const ColumnsWrapper = styled.div`
   @media screen and (min-width: 768px) {
     grid-template-columns: 1.2fr 0.8fr;
   }
-
 `;
 
 const Box = styled.div`
@@ -48,18 +48,16 @@ const ProductImageBox = styled.div`
   @media screen and (min-width: 768px) {
     padding: 10px;
   }
-  
 `;
 
 const QuantityLabel = styled.span`
   padding: 0 15px;
   display: block;
-  margin:5px 0 ;
+  margin: 5px 0;
   @media screen and (min-width: 768px) {
     display: inline-block;
     padding: 0 10px;
   }
-  
 `;
 
 const CityHolder = styled.div`
@@ -77,7 +75,7 @@ export default function CartPage() {
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (cartProducts.length > 0) {
@@ -94,11 +92,11 @@ export default function CartPage() {
   }, [cartProducts]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
     if (window.location.href.includes("success")) {
-      setIsSuccess(true)
+      setIsSuccess(true);
       clearCart();
     }
   }, []);
@@ -149,65 +147,73 @@ export default function CartPage() {
     );
   }
 
-
   return (
     <>
       <Header />
       <Center>
         <ColumnsWrapper>
-          <Box>
-            <h2>Cart</h2>
-            {!cartProducts?.length && <div>Your Cart is Empty</div>}
+          <RevealWrapper>
+            <Box>
+              <h2>Cart</h2>
+              {!cartProducts?.length && <div>Your Cart is Empty</div>}
 
-            {products?.length > 0 && (
-              <Table>
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products?.map((product, _) => (
-                    <tr key={_}>
-                      <ProductInfoCell>
-                        <ProductImageBox>
-                          <img src={product?.images[0]} />
-                        </ProductImageBox>
-                        {product?.title}
-                      </ProductInfoCell>
-
-                      <td>
-                        <Button cartBtn onClick={() => lessOfThisProduct(product._id)}>
-                          -
-                        </Button>
-                        <QuantityLabel>
-                          {
-                            cartProducts.filter((id) => id === product._id)
-                              .length
-                          }
-                        </QuantityLabel>
-                        <Button cartBtn onClick={() => moreOfThisProduct(product._id)}>
-                          +
-                        </Button>
-                      </td>
-                      <td>
-                        $
-                        {cartProducts.filter((id) => id === product._id)
-                          .length * product.price}
-                      </td>
+              {products?.length > 0 && (
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
                     </tr>
-                  ))}
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td>${total}</td>
-                  </tr>
-                </tbody>
-              </Table>
-            )}
-          </Box>
+                  </thead>
+                  <tbody>
+                    {products?.map((product, _) => (
+                      <tr key={_}>
+                        <ProductInfoCell>
+                          <ProductImageBox>
+                            <img src={product?.images[0]} />
+                          </ProductImageBox>
+                          {product?.title}
+                        </ProductInfoCell>
+
+                        <td>
+                          <Button
+                            cartBtn
+                            onClick={() => lessOfThisProduct(product._id)}
+                          >
+                            -
+                          </Button>
+                          <QuantityLabel>
+                            {
+                              cartProducts.filter((id) => id === product._id)
+                                .length
+                            }
+                          </QuantityLabel>
+                          <Button
+                            cartBtn
+                            onClick={() => moreOfThisProduct(product._id)}
+                          >
+                            +
+                          </Button>
+                        </td>
+                        <td>
+                          $
+                          {cartProducts.filter((id) => id === product._id)
+                            .length * product.price}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td>${total}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              )}
+            </Box>
+          </RevealWrapper>
+
           {!!cartProducts?.length && (
             <Box>
               <h2>Order Information</h2>

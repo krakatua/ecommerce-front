@@ -5,9 +5,7 @@ import Title from "@/components/Title";
 import { mongooseConnect } from "@/lib/mongoose";
 import { Product } from "@/modals/Product";
 
-
 export default function ProductsPage({ products }) {
-  console.log(products);
   return (
     <>
       <Header />
