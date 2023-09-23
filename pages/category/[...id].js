@@ -5,7 +5,6 @@ import Spinner from "@/components/Spinner";
 import { mongooseConnect } from "@/lib/mongoose";
 import { Category } from "@/modals/Category";
 import { Product } from "@/modals/Product";
-import { defaults } from "autoprefixer";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";

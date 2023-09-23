@@ -1,10 +1,9 @@
 import styled from "styled-components";
 import Center from "./Center";
-import Button from "./Button";
-import {BsFillCartFill, BsFillPlusCircleFill} from 'react-icons/bs'
+import { BsFillCartFill, BsFillPlusCircleFill } from "react-icons/bs";
 import ButtonLink from "./ButtonLink";
-import { useContext } from "react";
-import { CartContext } from "./CartContext";
+import FlyingBtn from "./FlyingBtn";
+import { RevealWrapper } from "next-reveal";
 
 const Bg = styled.div`
   background-color: #222;
@@ -43,63 +42,71 @@ const ColumnsWrapper = styled.div`
     order: 2;
   }
 
-
   @media screen and (min-width: 768px) {
     grid-template-columns: 1.1fr 0.9fr;
     div:nth-child(1) {
       order: 0;
     }
   }
-
 `;
 
 const Column = styled.div`
   display: flex;
   align-items: center;
-
 `;
 
 const ButtonsWrapper = styled.div`
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
 `;
 
-function Featured({product}) {
-
-  const {addProduct} = useContext(CartContext)
-  function addFeaturedToCart() {
-    addProduct(prev => [...prev, product._id]);
-  }
-
+function Featured({ product }) {
   return (
     <Bg>
       <Center>
         <ColumnsWrapper>
           <Column>
-            <div>
-              <Title>{product?.title}</Title>
-              <Desc>
-                {product?.description}
-              </Desc>
-              <ButtonsWrapper>
-                <ButtonLink href={`/products/${product?._id}`} 
-                outline={1} white={1}>
-                <BsFillPlusCircleFill/> Read More 
-                </ButtonLink>
-                <Button white onClick={addFeaturedToCart}>
-                <BsFillCartFill/> Add to Cart 
-                </Button>
-
-
-              
-              </ButtonsWrapper>
-              
-            </div>
+            <RevealWrapper origin="left">
+              <div>
+                <Title>{product?.title}</Title>
+                <Desc>{product?.description}</Desc>
+                <ButtonsWrapper>
+                  <ButtonLink
+                    href={`/products/${product?._id}`}
+                    outline={1}
+                    white={1}
+                    header
+                  >
+                    <BsFillPlusCircleFill /> Read More
+                  </ButtonLink>
+                  <FlyingBtn
+                    src={
+                      "https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP858/mbp16-gray.png"
+                    }
+                    targetTop={"5%"}
+                    targetLeft={"75%"}
+                    flyingItemStyling={{
+                      width: "auto",
+                      height: "auto",
+                      maxWidth: "100px",
+                      maxHeight: "100px",
+                      borderRadius: "0",
+                    }}
+                    _id={product?._id}
+                    header
+                  >
+                    <BsFillCartFill /> Add to Cart
+                  </FlyingBtn>
+                </ButtonsWrapper>
+              </div>
+            </RevealWrapper>
           </Column>
 
           <Column>
-            <img src="https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP858/mbp16-gray.png" />
+            <RevealWrapper origin="right">
+              <img src="https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP858/mbp16-gray.png" />
+            </RevealWrapper>
           </Column>
         </ColumnsWrapper>
       </Center>

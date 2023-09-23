@@ -1,10 +1,14 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import Button from "./Button";
+import { CartContext } from "./CartContext";
 
 const DEFAULT_TARGET_TOP = "5%",
   DEFAULT_TARGET_LEFT = "5%",
   DEFAULT_ANIMATION_DURATION = 0.9,
-  DEFAULT_ITEM_STYLING = { borderRadius: "4rem", width: "8rem" };
+  DEFAULT_ITEM_STYLING = {
+    borderRadius: "4rem",
+    width: "8rem",
+  };
 
 export default function FlyingBtn({
   src = "",
@@ -14,7 +18,10 @@ export default function FlyingBtn({
   customAnimation = "",
   animationDuration = DEFAULT_ANIMATION_DURATION,
   flyingItemStyling = DEFAULT_ITEM_STYLING,
+  _id,
+  ...rest
 }) {
+  const { addProduct } = useContext(CartContext);
   const flyingImage = useRef(null);
 
   const initFlight = (e) => {
@@ -62,9 +69,9 @@ export default function FlyingBtn({
     `;
 
   return (
-    <div>
+    <div onClick={() => addProduct(_id)}>
       <style>{customStyling}</style>
-      <Button primary outline onClick={(e) => initFlight(e)}>
+      <Button {...rest} onClick={(e) => initFlight(e)}>
         {children}
       </Button>
       <img
