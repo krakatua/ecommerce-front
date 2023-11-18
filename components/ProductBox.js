@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { BsFillCartFill } from "react-icons/bs";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import Link from "next/link";
 import FlyingBtn from "./FlyingBtn";
 
@@ -15,6 +16,7 @@ const WhiteBox = styled(Link)`
   justify-content: center;
   align-items: center;
   border-radius: 10px;
+  position: relative;
 
   img {
     max-width: 100%;
@@ -53,15 +55,53 @@ const Price = styled.div`
   font-weight: 600;
 `;
 
+const WishlistBtn = styled.button`
+  border: none;
+  width: 30px !important;
+  height: 30px;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  right: 30px;
+  background-color: transparent;
+  cursor: pointer;
+
+  svg {
+    width: 60px;
+    height: 20px;
+  }
+
+  ${(props) =>
+    props.wished
+      ? `
+  color: red;
+  `
+      : `
+  color: gray
+  `}
+`;
+
 export default function ProductBox({ _id, title, description, price, images }) {
   const url = "/products/" + _id;
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  function addToWishList(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    setIsWishlisted(true);
+  }
+
   return (
     <ProductWrapper>
       <WhiteBox href={url}>
         <WhiteBoxImg>
           <img src={images?.[0]} />
         </WhiteBoxImg>
+        <WishlistBtn wished={isWishlisted} onClick={addToWishList}>
+          <FaRegHeart />
+        </WishlistBtn>
       </WhiteBox>
+
       <ProductInfoBox>
         <Title href={url}>{title}</Title>
 

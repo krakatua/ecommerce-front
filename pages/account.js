@@ -52,6 +52,8 @@ export default function AccountPage() {
 
   useEffect(() => {
     setTimeout(() => {
+      if (!session) return;
+
       axios.get("/api/address").then((res) => {
         const address = res.data;
         if (address) {
@@ -133,9 +135,9 @@ export default function AccountPage() {
                     <Button black block onClick={saveAddress}>
                       Save
                     </Button>
-                    <hr />
                   </>
                 )}
+                <br />
                 {session && (
                   <Button primary onClick={logout}>
                     Logout
