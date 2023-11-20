@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Input from "@/components/Input";
 import Table from "@/components/Table";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { RevealWrapper } from "next-reveal";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -76,6 +77,7 @@ export default function CartPage() {
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (cartProducts.length > 0) {
@@ -99,6 +101,20 @@ export default function CartPage() {
       setIsSuccess(true);
       clearCart();
     }
+
+    if (!session) return;
+
+    axios.get("/api/address").then((res) => {
+      const address = res.data;
+      if (address) {
+        setName(address.name);
+        setEmail(address.email);
+        setCity(address.city);
+        setPostalCode(address.postalCode);
+        setStreetAddress(address.streetAddress);
+        setCountry(address.country);
+      }
+    });
   }, []);
 
   function moreOfThisProduct(id) {

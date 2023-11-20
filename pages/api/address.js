@@ -6,19 +6,25 @@ import { Address } from "@/modals/Address";
 export default async function handle(req, res) {
   await mongooseConnect();
 
-  const { user } = await getServerSession(req, res, authOptions);
-  res.json(user);
+  if (req.method === "PUT") {
+    const { user } = await getServerSession(req, res, authOptions);
+    const address = await Address.findOne({ userEmail: user.email });
 
-  const address = await Address.findOne({ userEmail: user.email });
+    if (address) {
+      res.json(await Address.findByIdAndUpdate(address._id, req.body));
+    } else {
+      res.json(
+        await Address.create({
+          userEmail: user.email,
+          ...req.body,
+        })
+      );
+    }
+  }
 
-  if (address) {
-    res.json(await Address.findByIdAndUpdate(address._id, req.body));
-  } else {
-    res.json(
-      await Address.create({
-        userEmail: user.email,
-        ...req.body,
-      })
-    );
+  if (req.method === "GET") {
+    const { user } = await getServerSession(req, res, authOptions);
+    const address = await Address.findOne({ userEmail: user.email });
+    res.json(address);
   }
 }

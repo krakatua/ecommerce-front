@@ -5,10 +5,11 @@ import Header from "@/components/Header";
 import Input from "@/components/Input";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { RevealWrapper } from "next-reveal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CityHolder } from "./cart";
 import axios from "axios";
+import Spinner from "@/components/Spinner";
 
 const ColsWrapper = styled.div`
   display: grid;
@@ -19,13 +20,13 @@ const ColsWrapper = styled.div`
 
 export default function AccountPage() {
   const { data: session } = useSession();
-  console.log(session);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
   async function logout() {
     await signOut({
@@ -49,6 +50,25 @@ export default function AccountPage() {
     axios.put(`/api/address`, data);
   }
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (!session) return;
+
+      axios.get("/api/address").then((res) => {
+        const address = res.data;
+        if (address) {
+          setName(address.name);
+          setEmail(address.email);
+          setCity(address.city);
+          setPostalCode(address.postalCode);
+          setStreetAddress(address.streetAddress);
+          setCountry(address.country);
+          setLoaded(true);
+        }
+      });
+    }, 2000);
+  }, []);
+
   return (
     <>
       <Header />
@@ -65,55 +85,59 @@ export default function AccountPage() {
             <div>
               <WhiteBox>
                 <h2>Account Details</h2>
-                <Input
-                  type="text"
-                  placeholder="Name"
-                  value={name}
-                  name="name"
-                  onChange={(ev) => setName(ev.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Email"
-                  value={email}
-                  name="email"
-                  onChange={(ev) => setEmail(ev.target.value)}
-                />
-                <CityHolder>
-                  <Input
-                    type="text"
-                    placeholder="City"
-                    value={city}
-                    name="city"
-                    onChange={(ev) => setCity(ev.target.value)}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Postal Code"
-                    value={postalCode}
-                    name="postalCode"
-                    onChange={(ev) => setPostalCode(ev.target.value)}
-                  />
-                </CityHolder>
-                <Input
-                  type="text"
-                  placeholder="Street Address"
-                  value={streetAddress}
-                  name="streetAddress"
-                  onChange={(ev) => setStreetAddress(ev.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Country"
-                  value={country}
-                  name="country"
-                  onChange={(ev) => setCountry(ev.target.value)}
-                />
-                <Button black block onClick={saveAddress}>
-                  Save
-                </Button>
-                <hr />
-
+                {!loaded && <Spinner fullWidth={true} />}
+                {loaded && (
+                  <>
+                    <Input
+                      type="text"
+                      placeholder="Name"
+                      value={name}
+                      name="name"
+                      onChange={(ev) => setName(ev.target.value)}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Email"
+                      value={email}
+                      name="email"
+                      onChange={(ev) => setEmail(ev.target.value)}
+                    />
+                    <CityHolder>
+                      <Input
+                        type="text"
+                        placeholder="City"
+                        value={city}
+                        name="city"
+                        onChange={(ev) => setCity(ev.target.value)}
+                      />
+                      <Input
+                        type="text"
+                        placeholder="Postal Code"
+                        value={postalCode}
+                        name="postalCode"
+                        onChange={(ev) => setPostalCode(ev.target.value)}
+                      />
+                    </CityHolder>
+                    <Input
+                      type="text"
+                      placeholder="Street Address"
+                      value={streetAddress}
+                      name="streetAddress"
+                      onChange={(ev) => setStreetAddress(ev.target.value)}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Country"
+                      value={country}
+                      name="country"
+                      onChange={(ev) => setCountry(ev.target.value)}
+                    />
+                    <Button black block onClick={saveAddress}>
+                      Save
+                    </Button>
+                  </>
+                )}
+                <br />
                 {session && (
                   <Button primary onClick={logout}>
                     Logout
