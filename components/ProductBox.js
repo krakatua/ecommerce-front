@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { BsFillCartFill } from "react-icons/bs";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
 import Link from "next/link";
 import FlyingBtn from "./FlyingBtn";
+import axios from "axios";
+import HeartSolidIcon from "./UI/HeartSolidIcon";
+import HeartOutlineIcon from "./UI/HeartOutlineIcon";
 
 const ProductWrapper = styled.div``;
 
@@ -56,39 +58,55 @@ const Price = styled.div`
 `;
 
 const WishlistBtn = styled.button`
-  border: none;
-  width: 30px !important;
-  height: 30px;
+  border: 0;
+  width: 40px !important;
+  height: 40px;
   padding: 10px;
   position: absolute;
   top: 0;
-  right: 30px;
-  background-color: transparent;
+  right: 0;
+  background: transparent;
+  transition: all 300ms ease;
   cursor: pointer;
-
-  svg {
-    width: 60px;
-    height: 20px;
-  }
-
   ${(props) =>
     props.wished
       ? `
-  color: red;
+    color:red;
   `
       : `
-  color: gray
+    color:black;
   `}
+  svg {
+    width: 16px;
+  }
 `;
 
-export default function ProductBox({ _id, title, description, price, images }) {
+export default function ProductBox({
+  _id,
+  title,
+  description,
+  price,
+  images,
+  wished,
+}) {
   const url = "/products/" + _id;
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWished, setIsWished] = useState(wished);
 
   function addToWishList(ev) {
     ev.stopPropagation();
     ev.preventDefault();
-    setIsWishlisted(true);
+
+    const nextValue = !isWished;
+
+    axios
+      .post("/api/wishlist", {
+        product: _id,
+      })
+      .then((res) => {
+        "Item Wished", res;
+      });
+
+    setIsWished(nextValue);
   }
 
   return (
@@ -97,8 +115,8 @@ export default function ProductBox({ _id, title, description, price, images }) {
         <WhiteBoxImg>
           <img src={images?.[0]} />
         </WhiteBoxImg>
-        <WishlistBtn wished={isWishlisted} onClick={addToWishList}>
-          <FaRegHeart />
+        <WishlistBtn wished={isWished} onClick={addToWishList}>
+          {isWished ? <HeartSolidIcon /> : <HeartOutlineIcon />}
         </WishlistBtn>
       </WhiteBox>
 
