@@ -1,7 +1,7 @@
 import { mongooseConnect } from "@/lib/mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
-import { Address } from "@/modals/Address";
+import { WishedProduct } from "@/modals/WishedProducts";
 
 export default async function handle(req, res) {
   await mongooseConnect();
@@ -10,31 +10,29 @@ export default async function handle(req, res) {
   switch (req.method) {
     case "GET":
       // Handle GET request
-      const getAddress = await Address.findOne({ userEmail: user.email });
-      res.json(getAddress);
       break;
     case "POST":
       // Handle POST request
 
       const { product } = req.body;
-
-      res.json({ product });
+      const wishedDoc = await WishedProduct.findOne({
+        userEmail: user.email,
+        product,
+      });
+      if (wishedDoc) {
+        await WishedProduct.findByIdAndDelete(wishedDoc._id);
+        res.json("deleted successfully");
+      } else {
+        await WishedProduct.create({
+          userEmail: user.email,
+          product,
+        });
+        res.json("Product Was wished successfully");
+      }
 
       break;
     case "PUT":
       // Handle PUT request
-      const address = await Address.findOne({ userEmail: user.email });
-
-      if (address) {
-        res.json(await Address.findByIdAndUpdate(address._id, req.body));
-      } else {
-        res.json(
-          await Address.create({
-            userEmail: user.email,
-            ...req.body,
-          })
-        );
-      }
       break;
     case "DELETE":
       // Handle DELETE request
