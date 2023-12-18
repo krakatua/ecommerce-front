@@ -10,9 +10,6 @@ import styled from "styled-components";
 import { CityHolder } from "./cart";
 import axios from "axios";
 import Spinner from "@/components/Spinner";
-import { mongooseConnect } from "@/lib/mongoose";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]";
 
 const ColsWrapper = styled.div`
   display: grid;
@@ -77,18 +74,13 @@ export default function AccountPage() {
   useEffect(() => {
     setTimeout(() => {
       if (!session) return;
-
+      setLoaded(true);
       axios.get("/api/address").then((res) => {
-        const address = res.data;
-        console.log(address)
-        if (address) {
-          setAddresses(address)
-        }
+        setAddresses(res.data) 
       });
-
-      console.log(addresses)
+      setLoaded(false);
     }, 2000);
-  }, []);
+  }, [session]);
 
   return (
     <>
@@ -155,10 +147,10 @@ export default function AccountPage() {
                     />
                     <BtnsWrapper>
 
-                    <Button black  onClick={saveAddress}>
+                    <Button black="true"  onClick={saveAddress}>
                       Save
                     </Button>
-                    <Button black  onClick={addAddress}>
+                    <Button black="true"  onClick={addAddress}>
                       Add
                     </Button>
                     </BtnsWrapper>
@@ -177,28 +169,16 @@ export default function AccountPage() {
                 )}
               </WhiteBox>
             </div>
-          {
-            addresses.map((addr) => (
+          {/* {
+            addresses?.map((addr) => (
               <WhiteBox>
                 <h3>{addr?.name}</h3>
               </WhiteBox>
             ))
-          }
+          } */}
           </RevealWrapper>
         </ColsWrapper>
       </Center>
     </>
   );
-}
-
-export async function getServerSideProps(ctx) {
-  await mongooseConnect();
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-
-  return {
-    props: {
-
-    }
-  }
-
 }
