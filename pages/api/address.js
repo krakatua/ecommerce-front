@@ -10,15 +10,18 @@ export default async function handle(req, res) {
   switch (req.method) {
     case "GET":
       // Handle GET request
-      const getAddress = await Address.findOne({ userEmail: user.email });
+      const getAddress = await Address.find({ userEmail: user.email });
       res.json(getAddress);
       break;
     case "POST":
       // Handle POST request
+      console.log(req.body)
+      await Address.create({
+        userEmail: user.email,
+        ...req.body
+      })
 
-      const { product } = req.body;
-
-      res.json({ product });
+      res.json("Address Saved")
 
       break;
     case "PUT":

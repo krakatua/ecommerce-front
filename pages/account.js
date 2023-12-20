@@ -18,6 +18,13 @@ const ColsWrapper = styled.div`
   margin: 40px 0;
 `;
 
+const BtnsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+`;
+
 export default function AccountPage() {
   const { data: session } = useSession();
   const [name, setName] = useState("");
@@ -26,7 +33,8 @@ export default function AccountPage() {
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true);
+  const [addresses, setAddresses] = useState({})
 
   async function logout() {
     await signOut({
@@ -50,24 +58,29 @@ export default function AccountPage() {
     axios.put(`/api/address`, data);
   }
 
+  function addAddress () {
+    const data = {
+      name,
+      email,
+      city,
+      postalCode,
+      streetAddress,
+      country,
+    };
+    console.log(data)
+    axios.post(`/api/address`, data)
+  }
+
   useEffect(() => {
     setTimeout(() => {
       if (!session) return;
-
+      setLoaded(true);
       axios.get("/api/address").then((res) => {
-        const address = res.data;
-        if (address) {
-          setName(address.name);
-          setEmail(address.email);
-          setCity(address.city);
-          setPostalCode(address.postalCode);
-          setStreetAddress(address.streetAddress);
-          setCountry(address.country);
-          setLoaded(true);
-        }
+        setAddresses(res.data) 
       });
+      setLoaded(false);
     }, 2000);
-  }, []);
+  }, [session]);
 
   return (
     <>
@@ -84,8 +97,8 @@ export default function AccountPage() {
           <RevealWrapper delay={0.5}>
             <div>
               <WhiteBox>
-                <h2>Account Details</h2>
-                {!loaded && <Spinner fullWidth={true} />}
+                <h2>Shipping Details</h2>
+                {!loaded && <Spinner fullWidth  />}
                 {loaded && (
                   <>
                     <Input
@@ -132,9 +145,15 @@ export default function AccountPage() {
                       name="country"
                       onChange={(ev) => setCountry(ev.target.value)}
                     />
-                    <Button black block onClick={saveAddress}>
+                    <BtnsWrapper>
+
+                    <Button black="true"  onClick={saveAddress}>
                       Save
                     </Button>
+                    <Button black="true"  onClick={addAddress}>
+                      Add
+                    </Button>
+                    </BtnsWrapper>
                   </>
                 )}
                 <br />
@@ -150,6 +169,13 @@ export default function AccountPage() {
                 )}
               </WhiteBox>
             </div>
+          {/* {
+            addresses?.map((addr) => (
+              <WhiteBox>
+                <h3>{addr?.name}</h3>
+              </WhiteBox>
+            ))
+          } */}
           </RevealWrapper>
         </ColsWrapper>
       </Center>

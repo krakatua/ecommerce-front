@@ -94,6 +94,10 @@ export const ButtonStyle = css`
         height: 20px;
       }
     `}
+
+    ${(props) => 
+      props.size 
+    }
 `;
 
 const StyledButton = styled.button`
