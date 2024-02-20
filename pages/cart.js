@@ -101,7 +101,9 @@ export default function CartPage() {
       setIsSuccess(true);
       clearCart();
     }
+  }, []);
 
+  useEffect(() => {
     if (!session) return;
 
     axios.get("/api/address").then((res) => {
@@ -115,7 +117,7 @@ export default function CartPage() {
         setCountry(address.country);
       }
     });
-  }, []);
+  }, [session])
 
   function moreOfThisProduct(id) {
     addProduct(id);
