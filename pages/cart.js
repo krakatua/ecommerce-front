@@ -66,6 +66,14 @@ export const CityHolder = styled.div`
   gap: 5px;
 `;
 
+export const TitleCart = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+
+`;
+
+
 export default function CartPage() {
   const { cartProducts, addProduct, removeProduct, clearCart } =
     useContext(CartContext);
@@ -149,6 +157,10 @@ export default function CartPage() {
     total += price;
   }
 
+  function clearCartFunc() {
+    clearCart()
+  }
+
   if (isSuccess) {
     return (
       <>
@@ -172,7 +184,14 @@ export default function CartPage() {
         <ColumnsWrapper>
           <RevealWrapper>
             <Box>
+              <TitleCart>
+
               <h2>Cart</h2>
+              <Button
+              black
+              onClick={clearCartFunc}
+              >Clear</Button>
+              </TitleCart>
               {!cartProducts?.length && <div>Your Cart is Empty</div>}
 
               {products?.length > 0 && (
