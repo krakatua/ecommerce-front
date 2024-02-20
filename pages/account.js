@@ -19,7 +19,7 @@ const ColsWrapper = styled.div`
   grid-template-columns: 1.2fr 0.8fr;
   gap: 40px;
   margin: 40px 0;
-  p{
+  p {
     margin: 5px;
   }
 `;
@@ -42,7 +42,7 @@ export default function AccountPage() {
   const [wishLoaded, setWishLoaded] = useState(true);
   const [orderLoaded, setOrderLoaded] = useState(true);
   const [wishlist, setWishlist] = useState([]);
-  const [activeTab, setActiveTab] = useState('Orders');
+  const [activeTab, setActiveTab] = useState("Orders");
   const [orders, setOrders] = useState([]);
 
   async function logout() {
@@ -69,11 +69,11 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!session) return;
-    setAddressLoaded(false)
-    setWishLoaded(false)
-    setOrderLoaded(false)
+    setAddressLoaded(false);
+    setWishLoaded(false);
+    setOrderLoaded(false);
     axios.get("/api/address").then((res) => {
-        setTimeout(() => {
+      setTimeout(() => {
         const address = res.data;
         if (address) {
           setName(address.name);
@@ -85,7 +85,7 @@ export default function AccountPage() {
           setAddressLoaded(true);
         }
       }, 500);
-      });
+    });
     axios.get("/api/wishlist").then((res) => {
       setTimeout(() => {
         const wishlist = res.data;
@@ -94,21 +94,18 @@ export default function AccountPage() {
           setWishLoaded(true);
         }
       }, 500);
-    
-    })
+    });
 
-    axios.get('/api/orders').then(res => {
+    axios.get("/api/orders").then((res) => {
       setOrders(res?.data);
       setOrderLoaded(true);
-    })
-
-    
+    });
   }, [session]);
 
   function removeFromWishList(id) {
-      setWishlist(products => {
-        return [...products.filter(p => p._id.toString() !== id)]
-      });
+    setWishlist((products) => {
+      return [...products.filter((p) => p._id.toString() !== id)];
+    });
   }
 
   return (
@@ -119,39 +116,49 @@ export default function AccountPage() {
           <RevealWrapper delay={0}>
             <div>
               <WhiteBox>
-                <Tabs tabs={['Orders','Wishlist']} active={activeTab}
-                onChange={setActiveTab}
+                <Tabs
+                  tabs={["Orders", "Wishlist"]}
+                  active={activeTab}
+                  onChange={setActiveTab}
                 />
-                {activeTab === 'Wishlist' && 
-                
-                <WishedProductsGrid>
-                  {!wishLoaded && <Spinner fullWidth={true} />}
-                {wishlist.length > 0 && wishLoaded && wishlist.map(wp => (
-                  <ProductBox key={wp?._id} {...wp} wished={true}
-                  onRemoveFromWishList={removeFromWishList}
-                  />
-                ))}
-                {
-                  wishlist.length === 0 && wishLoaded && (
-                    <>
-                    {session ? <p>No products in your wishlist</p>
-                    : <p>Login to see your wishlist</p>}
-                    </>
-                  )
-                }
-                </WishedProductsGrid>
-                }
-                {activeTab === 'Orders' && (
+                {activeTab === "Wishlist" && (
+                  <WishedProductsGrid>
+                    {!wishLoaded && <Spinner fullWidth={true} />}
+                    {wishlist.length > 0 &&
+                      wishLoaded &&
+                      wishlist.map((wp) => (
+                        <ProductBox
+                          key={wp?._id}
+                          {...wp}
+                          wished={true}
+                          onRemoveFromWishList={removeFromWishList}
+                        />
+                      ))}
+                    {wishlist.length === 0 && wishLoaded && (
+                      <>
+                        {session ? (
+                          <p>No products in your wishlist</p>
+                        ) : (
+                          <p>Login to see your wishlist</p>
+                        )}
+                      </>
+                    )}
+                  </WishedProductsGrid>
+                )}
+                {activeTab === "Orders" && (
                   <>
                     {!orderLoaded && <Spinner fullWidth={true} />}
-                    {orders.length > 0 && orderLoaded && orders.map(order => (
-                     <SingleOrder {...order}/>
-                    ))}
+                    {orders.length > 0 &&
+                      orderLoaded &&
+                      orders.map((order, index) => (
+                        <div key={index}>
+                          <SingleOrder {...order} />
+                        </div>
+                      ))}
                     {orders.length === 0 && orderLoaded && (
                       <p>No orders found</p>
                     )}
                   </>
-                
                 )}
               </WhiteBox>
             </div>
@@ -159,9 +166,9 @@ export default function AccountPage() {
           <RevealWrapper delay={0.5}>
             <div>
               <WhiteBox>
-                <h2>{session ? 'Account Details' : 'Login'}</h2>
+                <h2>{session ? "Account Details" : "Login"}</h2>
                 {!addressloaded && <Spinner fullWidth={true} />}
-                {addressloaded &&  session ? (
+                {addressloaded && session ? (
                   <>
                     <Input
                       type="text"
@@ -210,7 +217,7 @@ export default function AccountPage() {
                     <Button black block onClick={saveAddress}>
                       Save
                     </Button>
-                  </> 
+                  </>
                 ) : (
                   <p>Login to see your account details</p>
                 )}
