@@ -10,19 +10,24 @@ import styled from "styled-components";
 import { CityHolder } from "./cart";
 import axios from "axios";
 import Spinner from "@/components/Spinner";
+import ProductBox from "@/components/ProductBox";
+import Tabs from "@/components/Tabs";
+import SingleOrder from "@/components/SingleOrder";
 
 const ColsWrapper = styled.div`
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 40px;
   margin: 40px 0;
+  p {
+    margin: 5px;
+  }
 `;
 
-const BtnsWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
+const WishedProductsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 `;
 
 export default function AccountPage() {
@@ -33,8 +38,12 @@ export default function AccountPage() {
   const [postalCode, setPostalCode] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [country, setCountry] = useState("");
-  const [loaded, setLoaded] = useState(true);
-  const [addresses, setAddresses] = useState({})
+  const [addressloaded, setAddressLoaded] = useState(true);
+  const [wishLoaded, setWishLoaded] = useState(true);
+  const [orderLoaded, setOrderLoaded] = useState(true);
+  const [wishlist, setWishlist] = useState([]);
+  const [activeTab, setActiveTab] = useState("Orders");
+  const [orders, setOrders] = useState([]);
 
   async function logout() {
     await signOut({
@@ -58,29 +67,46 @@ export default function AccountPage() {
     axios.put(`/api/address`, data);
   }
 
-  function addAddress () {
-    const data = {
-      name,
-      email,
-      city,
-      postalCode,
-      streetAddress,
-      country,
-    };
-    console.log(data)
-    axios.post(`/api/address`, data)
-  }
-
   useEffect(() => {
-    setTimeout(() => {
-      if (!session) return;
-      setLoaded(true);
-      axios.get("/api/address").then((res) => {
-        setAddresses(res.data) 
-      });
-      setLoaded(false);
-    }, 2000);
+    if (!session) return;
+    setAddressLoaded(false);
+    setWishLoaded(false);
+    setOrderLoaded(false);
+    axios.get("/api/address").then((res) => {
+      setTimeout(() => {
+        const address = res.data;
+        if (address) {
+          setName(address.name);
+          setEmail(address.email);
+          setCity(address.city);
+          setPostalCode(address.postalCode);
+          setStreetAddress(address.streetAddress);
+          setCountry(address.country);
+          setAddressLoaded(true);
+        }
+      }, 500);
+    });
+    axios.get("/api/wishlist").then((res) => {
+      setTimeout(() => {
+        const wishlist = res.data;
+        if (wishlist) {
+          setWishlist(res?.data.map((item) => item.product) || []);
+          setWishLoaded(true);
+        }
+      }, 500);
+    });
+
+    axios.get("/api/orders").then((res) => {
+      setOrders(res?.data);
+      setOrderLoaded(true);
+    });
   }, [session]);
+
+  function removeFromWishList(id) {
+    setWishlist((products) => {
+      return [...products.filter((p) => p._id.toString() !== id)];
+    });
+  }
 
   return (
     <>
@@ -90,16 +116,59 @@ export default function AccountPage() {
           <RevealWrapper delay={0}>
             <div>
               <WhiteBox>
-                <h2>Wishlist</h2>
+                <Tabs
+                  tabs={["Orders", "Wishlist"]}
+                  active={activeTab}
+                  onChange={setActiveTab}
+                />
+                {activeTab === "Wishlist" && (
+                  <WishedProductsGrid>
+                    {!wishLoaded && <Spinner fullWidth={true} />}
+                    {wishlist.length > 0 &&
+                      wishLoaded &&
+                      wishlist.map((wp) => (
+                        <ProductBox
+                          key={wp?._id}
+                          {...wp}
+                          wished={true}
+                          onRemoveFromWishList={removeFromWishList}
+                        />
+                      ))}
+                    {wishlist.length === 0 && wishLoaded && (
+                      <>
+                        {session ? (
+                          <p>No products in your wishlist</p>
+                        ) : (
+                          <p>Login to see your wishlist</p>
+                        )}
+                      </>
+                    )}
+                  </WishedProductsGrid>
+                )}
+                {activeTab === "Orders" && (
+                  <>
+                    {!orderLoaded && <Spinner fullWidth={true} />}
+                    {orders.length > 0 &&
+                      orderLoaded &&
+                      orders.map((order, index) => (
+                        <div key={index}>
+                          <SingleOrder {...order} />
+                        </div>
+                      ))}
+                    {orders.length === 0 && orderLoaded && (
+                      <p>No orders found</p>
+                    )}
+                  </>
+                )}
               </WhiteBox>
             </div>
           </RevealWrapper>
           <RevealWrapper delay={0.5}>
             <div>
               <WhiteBox>
-                <h2>Shipping Details</h2>
-                {!loaded && <Spinner fullWidth  />}
-                {loaded && (
+                <h2>{session ? "Account Details" : "Login"}</h2>
+                {!addressloaded && <Spinner fullWidth={true} />}
+                {addressloaded && session ? (
                   <>
                     <Input
                       type="text"
@@ -145,16 +214,12 @@ export default function AccountPage() {
                       name="country"
                       onChange={(ev) => setCountry(ev.target.value)}
                     />
-                    <BtnsWrapper>
-
-                    <Button black="true"  onClick={saveAddress}>
+                    <Button black block onClick={saveAddress}>
                       Save
                     </Button>
-                    <Button black="true"  onClick={addAddress}>
-                      Add
-                    </Button>
-                    </BtnsWrapper>
                   </>
+                ) : (
+                  <p>Login to see your account details</p>
                 )}
                 <br />
                 {session && (
@@ -164,18 +229,11 @@ export default function AccountPage() {
                 )}
                 {!session && (
                   <Button primary onClick={login}>
-                    Login
+                    Login with Google
                   </Button>
                 )}
               </WhiteBox>
             </div>
-          {/* {
-            addresses?.map((addr) => (
-              <WhiteBox>
-                <h3>{addr?.name}</h3>
-              </WhiteBox>
-            ))
-          } */}
           </RevealWrapper>
         </ColsWrapper>
       </Center>

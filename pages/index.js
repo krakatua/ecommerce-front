@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
   const wishedNewProducts = session?.user
     ? await WishedProduct.find({
-        userEmail: session.user.email,
+        userEmail: session?.user?.email,
         product: newProducts.map((p) => p._id.toString()),
       })
     : [];
@@ -41,7 +41,7 @@ export async function getServerSideProps(ctx) {
     props: {
       featuredProduct: JSON.parse(JSON.stringify(featuredProduct)),
       newProducts: JSON.parse(JSON.stringify(newProducts)),
-      wishedNewProducts: wishedNewProducts.map((p) => p._id.toString()),
+      wishedNewProducts: wishedNewProducts.map(i => i.product.toString()),
     },
   };
 }

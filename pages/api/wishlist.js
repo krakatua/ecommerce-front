@@ -9,7 +9,12 @@ export default async function handle(req, res) {
 
   switch (req.method) {
     case "GET":
-      // Handle GET request
+      res.json(
+        await WishedProduct.find({
+          userEmail: user.email,
+        }).populate("product")
+      )  
+
       break;
     case "POST":
       // Handle POST request
