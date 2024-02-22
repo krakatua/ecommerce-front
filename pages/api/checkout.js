@@ -1,6 +1,8 @@
 import { mongooseConnect } from "@/lib/mongoose";
 import { Order } from "@/modals/Order";
 import { Product } from "@/modals/Product";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]";
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
@@ -33,7 +35,15 @@ export default async function handler(req, res) {
           });
         }
       }
+
+      const session = await getServerSession(req,res, authOptions)
+      if (!session) {
+        res.json({error:'You need to be logged in to checkout'})
+        return;
+      }
+
   const orderDoc = await Order.create({
+    userEmail: session?.user?.email,
     line_items,
     name,
     email,
@@ -44,7 +54,7 @@ export default async function handler(req, res) {
     paid: false
   });
 
-  const session = await stripe.checkout.sessions.create({
+  const stripeSession = await stripe.checkout.sessions.create({
     line_items,
     mode: 'payment',
     customer_email: email,
@@ -55,6 +65,6 @@ export default async function handler(req, res) {
   });
 
   res.json({
-    url: session.url
+    url: stripeSession.url
   })
 }
