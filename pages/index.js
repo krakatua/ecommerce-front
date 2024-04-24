@@ -6,6 +6,7 @@ import { Product } from "@/modals/Product";
 import { WishedProduct } from "@/modals/WishedProducts";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
+import { Setting } from "@/modals/Settings";
 
 export default function HomePage({
   featuredProduct,
@@ -22,8 +23,9 @@ export default function HomePage({
 }
 
 export async function getServerSideProps(ctx) {
-  const featuredProductId = "64eba8253fd73fd6f81c273a";
   await mongooseConnect();
+  const featuredProductSettg = await Setting.findOne({name: 'featuredProduct'});
+  const featuredProductId = featuredProductSettg?.value;
   const featuredProduct = await Product.findById(featuredProductId);
   const newProducts = await Product.find({}, null, {
     sort: { _id: -1 },

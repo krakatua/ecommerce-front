@@ -16,6 +16,25 @@ const ColumnsWrapper = styled.div`
   gap: 40px;
   margin: 40px 0;
 
+  table thead tr th:nth-child(3),
+  table tbody tr td:nth-child(3),
+  table tbody tr.subtotal td:nth-child(2) {
+    text-align: right;
+  }
+
+  table tbody tr.subtotal td {
+    padding: 15px 0;
+  }
+  table tbody tr.subtotal td:nth-child(3) {
+    font-size: 1.2rem;
+  }
+
+  table tbody tr.total {
+    font-weight: bold;
+    font-size: 1.3rem;
+  }
+  
+
   @media screen and (min-width: 768px) {
     grid-template-columns: 1.2fr 0.8fr;
   }
@@ -86,6 +105,7 @@ export default function CartPage() {
   const [country, setCountry] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const { data: session } = useSession();
+  const [shippingFee, setShippingFee] = useState("");
 
   useEffect(() => {
     if (cartProducts.length > 0) {
@@ -109,6 +129,10 @@ export default function CartPage() {
       setIsSuccess(true);
       clearCart();
     }
+
+    axios.get("/api/settings?name=shippingFee").then((res) => {
+      setShippingFee(res.data.value);
+    });
   }, []);
 
   useEffect(() => {
@@ -150,11 +174,11 @@ export default function CartPage() {
     }
   }
 
-  let total = 0;
+  let productsTotal = 0;
 
   for (const productId of cartProducts) {
     const price = products.find((p) => p._id === productId)?.price || 0;
-    total += price;
+    productsTotal += price;
   }
 
   function clearCartFunc() {
@@ -240,10 +264,22 @@ export default function CartPage() {
                         </td>
                       </tr>
                     ))}
-                    <tr>
+                    <tr className="subtotal">
+                      <td colSpan={2}>Products</td>
                       <td></td>
+                      <td>${productsTotal}</td>
+                    </tr>
+                    <tr className="subtotal">
+                      <td colSpan={2}>Shipping</td>
                       <td></td>
-                      <td>${total}</td>
+                      <td>$
+                        {shippingFee}
+                      </td>
+                    </tr>
+                    <tr className="subtotal total">
+                      <td colSpan={2}>Total</td>
+                      <td></td>
+                      <td>${productsTotal + Number(shippingFee)}</td>
                     </tr>
                   </tbody>
                 </Table>
