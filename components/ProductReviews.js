@@ -121,8 +121,8 @@ export default function ProductReviews({ product }) {
             {reviews.length === 0 && (
               <p>No reviews :(</p>
             )}
-            {reviews.length > 0 && reviews.map(review => (
-              <ReviewWrapper>
+            {reviews.length > 0 && reviews.map((review, index) => (
+              <ReviewWrapper key={index}>
                 <ReviewHeader>
                 <Rating name="read-only" value={review.rating} readOnly />
                   <time>{(new Date(review.createdAt)).toLocaleString('sv-SE')}</time>
