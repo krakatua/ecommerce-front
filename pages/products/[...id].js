@@ -3,6 +3,7 @@ import Center from "@/components/Center";
 import FlyingBtn from "@/components/FlyingBtn";
 import Header from "@/components/Header";
 import ProductImages from "@/components/ProductImages";
+import ProductReviews from "@/components/ProductReviews";
 import Title from "@/components/Title";
 import { mongooseConnect } from "@/lib/mongoose";
 import { Product } from "@/modals/Product";
@@ -73,6 +74,7 @@ export default function ProductPage({ product }) {
             </PriceRow>
           </div>
         </ColumnWrapper>
+        <ProductReviews product={product}/>
       </Center>
     </>
   );

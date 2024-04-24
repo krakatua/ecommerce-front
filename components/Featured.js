@@ -53,12 +53,19 @@ const ColumnsWrapper = styled.div`
 const Column = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
 `;
 
 const ButtonsWrapper = styled.div`
   display: flex;
   gap: 15px;
   margin-top: 25px;
+`;
+
+const CenterImg = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 function Featured({ product }) {
@@ -105,7 +112,10 @@ function Featured({ product }) {
 
           <Column>
             <RevealWrapper origin="right">
-              <img src="https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP858/mbp16-gray.png" />
+              <CenterImg className="">
+
+              <img src={product.images?.[0]} />
+              </CenterImg>
             </RevealWrapper>
           </Column>
         </ColumnsWrapper>
